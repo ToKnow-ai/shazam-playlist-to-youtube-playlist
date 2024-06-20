@@ -1,17 +1,10 @@
 """Shazam Playlist to Youtube Playlist"""
 
-import json
 import pandas as pd
 from pytube import Search, YouTube
-from flask import Flask, render_template, request, jsonify, send_from_directory
-from werkzeug.utils import secure_filename
-import os
+from flask import Flask, request, send_from_directory
 
 app = Flask(__name__)
-
-def get_youtube_song(title: str, artist: str) -> YouTube | None:
-    search_result = Search(f'{title} by {artist}')
-    return search_result.results[0] if search_result.results else None
 
 @app.route('/')
 def index():
@@ -41,3 +34,8 @@ def parse_csv():
         return shazamlibrary_df.to_html(index=False, justify="left")
     except Exception as e:
         return str(e)
+    
+
+def get_youtube_song(title: str, artist: str) -> YouTube | None:
+    search_result = Search(f'{title} by {artist}')
+    return search_result.results[0] if search_result.results else None
