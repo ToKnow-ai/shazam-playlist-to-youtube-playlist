@@ -18,7 +18,7 @@ def video_id() -> str:
     try:
         title: str = request.json.get('title')
         artist: str = request.json.get('artist')
-        youtube: YouTube = get_youtube_song(title, artist)
+        youtube: YouTube = _get_youtube_song(title, artist)
         return youtube.video_id
     except Exception as e:
         return str(e)
@@ -34,8 +34,8 @@ def parse_csv():
         return shazamlibrary_df.to_html(index=False, justify="left")
     except Exception as e:
         return str(e)
-    
-
-def get_youtube_song(title: str, artist: str) -> YouTube | None:
+# Adding underscore to ignore, otherwise, docker fails with error:
+# TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
+def _get_youtube_song(title: str, artist: str) -> YouTube | None:
     search_result = Search(f'{title} by {artist}')
     return search_result.results[0] if search_result.results else None
