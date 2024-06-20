@@ -1,5 +1,6 @@
 """Shazam Playlist to Youtube Playlist"""
 
+from typing import Optional
 import pandas as pd
 from pytube import Search, YouTube
 from flask import Flask, request, send_from_directory
@@ -34,8 +35,8 @@ def parse_csv():
         return shazamlibrary_df.to_html(index=False, justify="left")
     except Exception as e:
         return str(e)
-# Adding underscore to ignore, otherwise, docker fails with error:
-# TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
-def _get_youtube_song(title: str, artist: str) -> YouTube | None:
+    
+
+def _get_youtube_song(title: str, artist: str) -> Optional[YouTube]:
     search_result = Search(f'{title} by {artist}')
     return search_result.results[0] if search_result.results else None
