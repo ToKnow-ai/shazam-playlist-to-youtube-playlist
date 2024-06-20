@@ -1,19 +1,43 @@
-from flask import Flask, request
+"""Shazam Playlist to Youtube Playlist"""
+
+import json
+import pandas as pd
+from pytube import Search, YouTube
+from flask import Flask, render_template, request, jsonify, send_from_directory
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 
+def get_youtube_song(title: str, artist: str) -> YouTube | None:
+    search_result = Search(f'{title} by {artist}')
+    return search_result.results[0] if search_result.results else None
+
 @app.route('/')
-def hello_world():
+def index():
     try:
-        return 'Hello, World!'
+        return send_from_directory('.', 'index.html')
+    except Exception as e:
+        return str(e)
+    
+@app.route('/video_id', methods=['POST'])
+def video_id() -> str:
+    try:
+        title: str = request.json.get('title')
+        artist: str = request.json.get('artist')
+        youtube: YouTube = get_youtube_song(title, artist)
+        return youtube.video_id
     except Exception as e:
         return str(e)
 
-@app.route('/video_id', methods=['POST'])
-def get_video_id():
+@app.route('/parse_csv', methods=['POST'])
+def parse_csv():
     try:
-        title = request.json.get('title')
-        artist = request.json.get('artist')
-        return { 'artist': artist, 'title': title }
+        file = request.files['file']
+        # Process the uploaded file
+        shazamlibrary_df = pd.read_csv(file, header=1)
+        shazamlibrary_df = shazamlibrary_df.drop_duplicates(subset=['TrackKey'])[['Title', 'Artist']]
+        shazamlibrary_df.insert(0, '#', shazamlibrary_df.index + 1)
+        return shazamlibrary_df.to_html(index=False, justify="left")
     except Exception as e:
         return str(e)
