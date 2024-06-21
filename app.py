@@ -31,8 +31,7 @@ def parse_csv():
         # Process the uploaded file
         shazamlibrary_df = pd.read_csv(file, header=1)
         shazamlibrary_df = shazamlibrary_df.drop_duplicates(subset=['TrackKey'])[['Title', 'Artist']]
-        shazamlibrary_df.insert(0, '#', shazamlibrary_df.index + 1)
-        return shazamlibrary_df.to_html(index=False, justify="left")
+        return shazamlibrary_df.to_json(orient="records")
     except Exception as e:
         return str(e)
     
