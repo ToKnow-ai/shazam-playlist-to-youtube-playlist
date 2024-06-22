@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    """Route handler for the home page"""
     try:
         return send_from_directory('.', 'index.html')
     except Exception as e:
@@ -16,6 +17,7 @@ def index():
     
 @app.route('/video_id', methods=['POST'])
 def video_id() -> str:
+    """Route handler for retrieving the YouTube video ID"""
     try:
         title: str = request.json.get('title')
         artist: str = request.json.get('artist')
@@ -26,6 +28,7 @@ def video_id() -> str:
 
 @app.route('/parse_csv', methods=['POST'])
 def parse_csv():
+    """Route handler for parsing the uploaded CSV file"""
     try:
         file = request.files['file']
         # Process the uploaded file
@@ -34,8 +37,8 @@ def parse_csv():
         return shazamlibrary_df.to_json(orient="records")
     except Exception as e:
         return str(e)
-    
 
 def _get_youtube_song(title: str, artist: str) -> Optional[YouTube]:
+    """Searches for a YouTube video based on the given title and artist"""
     search_result = Search(f'{title} by {artist}')
     return search_result.results[0] if search_result.results else None
