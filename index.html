@@ -28,7 +28,10 @@
             <em>
                 <i>
                     Read details at
-                    <a target="_blank" href="https://toknow.ai/posts/shazam-playlist-to-youtube-playlist/"><b>ToKnow.ai</b> blog post</a>.
+                    <a target="_blank"
+                        href="https://toknow.ai/posts/shazam-playlist-to-youtube-playlist/"><b>ToKnow.ai</b> blog
+                        post.
+                    </a>
                 </i>
             </em>
         </p>
@@ -141,7 +144,7 @@
                 playlistTable.innerHTML = error;
             }
         }
-        function onYouTubeIframeAPIReady() {
+        function initiatePlayer() {
             const youtubePlayerElement = document.querySelector('.youtube-player');
             youtubePlayer = window.youtubePlayer = new YT.Player(youtubePlayerElement, {
                 height: '100%',
@@ -162,14 +165,7 @@
                     }
                 }
             });
-
-            const setIntervalId = setInterval(() => {
-                if (songsPlaylist.length > 0) {
-                    clearInterval(setIntervalId);
-                    onContinue();
-                }
-            }, 500);
-        };
+        }
         function onContinue(player = undefined, newIndex = undefined) {
             if (songsPlaylist.length > 0) {
                 nextVideo((value) => {
@@ -187,6 +183,16 @@
                 }, newIndex);
             }
         }
+        const setIntervalId = setInterval(() => {
+            if (YT.Player) {
+                if (!youtubePlayer) {
+                    initiatePlayer();
+                } else if (songsPlaylist.length > 0) {
+                    clearInterval(setIntervalId);
+                    onContinue();
+                }
+            }
+        }, 300);
     </script>
 </body>
 
