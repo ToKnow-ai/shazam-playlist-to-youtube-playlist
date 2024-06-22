@@ -1,9 +1,14 @@
 """Shazam Playlist to Youtube Playlist"""
 
 from typing import Optional
+import logging
 import pandas as pd
 from pytube import Search, YouTube
 from flask import Flask, request, send_from_directory
+
+# https://github.com/pytube/pytube/issues/1270#issuecomment-2100372834
+pytube_logger = logging.getLogger('pytube')
+pytube_logger.setLevel(logging.ERROR)
 
 app = Flask(__name__)
 
@@ -21,7 +26,7 @@ def video_id() -> str:
     try:
         title: str = request.json.get('title')
         artist: str = request.json.get('artist')
-        youtube: YouTube = _get_youtube_song(title, artist)
+        youtube: YouTube = get_youtube_song(title, artist)
         return youtube.video_id
     except Exception as e:
         return str(e)
@@ -38,7 +43,7 @@ def parse_csv():
     except Exception as e:
         return str(e)
 
-def _get_youtube_song(title: str, artist: str) -> Optional[YouTube]:
+def get_youtube_song(title: str, artist: str) -> Optional[YouTube]:
     """Searches for a YouTube video based on the given title and artist"""
     search_result = Search(f'{title} by {artist}')
     return search_result.results[0] if search_result.results else None
