@@ -44,3 +44,5 @@ https://codepen.io/stillurboy/pen/JjVexrM
 https://codepen.io/tag/youtube
 https://codepen.io/RIR360/pen/GRWNxpo
 https://codepen.io/Diogo-Gon-alves-the-selector/pen/rNgyMxb
+
+Add query parameter to tune the page for minimal UI, for embending into a blog post. Currently, the embeded iframe mentiones the same post in the embend, taking up too much uneccessary real estate. Also, only open in new tab when not an IFRAME
