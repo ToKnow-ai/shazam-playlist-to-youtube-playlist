@@ -6,6 +6,7 @@ import logging
 import pandas as pd
 from pytube import Search, YouTube
 from flask import Flask, request, send_from_directory
+from sklearn.utils import shuffle as shuffle_fn
 
 # https://github.com/pytube/pytube/issues/1270#issuecomment-2100372834
 pytube_logger = logging.getLogger('pytube')
@@ -48,7 +49,7 @@ def parse_csv_test():
     try:
         # Construct the path to the CSV file
         csv_path = Path(__file__).parent / 'shazamlibrary.test.csv'
-        return parse_csv_util(pd.read_csv(csv_path, header=1))
+        return parse_csv_util(pd.read_csv(csv_path, header=1), True)
     except Exception as e:
         return str(e)
 
@@ -57,9 +58,11 @@ def get_youtube_song(title: str, artist: str) -> Optional[YouTube]:
     search_result = Search(f'{title} by {artist}')
     return search_result.results[0] if search_result.results else None
 
-def parse_csv_util(shazamlibrary_df):
+def parse_csv_util(df: pd.DataFrame, shuffle = False):
     try:
-        shazamlibrary_df = shazamlibrary_df.drop_duplicates(subset=['TrackKey'])[['Title', 'Artist']]
-        return shazamlibrary_df.to_json(orient="records")
+        df = df.drop_duplicates(subset=['TrackKey'])[['Title', 'Artist']]
+        if shuffle:
+            df = shuffle_fn(df)
+        return df.to_json(orient="records")
     except Exception as e:
         return str(e)

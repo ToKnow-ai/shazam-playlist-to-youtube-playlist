@@ -136,7 +136,7 @@
         function generateTable(playlist) {
             try {
                 songsPlaylist = playlist
-                tableBody = songsPlaylist.map((i, index) => `
+                const tableBody = songsPlaylist.map((i, index) => `
                             <tr data-index="${index}">
                                 <th>${index + 1}</th>
                                 <th>${i.Title}</th>
@@ -154,6 +154,11 @@
                     </thead>
                     <tbody>${tableBody}</tbody>
                 </table>`
+
+                tryToPlay(() => {
+                    videoIndex = -1;
+                    onContinue();
+                }, 100)
             } catch (error) {
                 playlistTable.innerHTML = error;
             }
@@ -207,16 +212,21 @@
                 }, newIndex);
             }
         }
-        const setIntervalId = setInterval(() => {
-            if (YT.Player) {
-                if (!youtubePlayer) {
-                    initiatePlayer();
-                } else if (songsPlaylist.length > 0) {
-                    clearInterval(setIntervalId);
-                    onContinue();
+
+        function tryToPlay(playCallback, timeout) {
+            setTimeout(() => {
+                if (YT.Player) {
+                    if (!youtubePlayer) {
+                        initiatePlayer();
+                        tryToPlay?.();
+                    } else if (songsPlaylist.length > 0) {
+                        playCallback();
+                    }
                 }
-            }
-        }, 300);
+            }, timeout);
+        }
+
+        tryToPlay(null, 300);
     </script>
 </body>
 
