@@ -46,7 +46,13 @@
             </div>
         </div>
 
-        <div class="row mt-5 justify-content-center">
+        <div class="d-flex mt-2 justify-content-center">
+            <a id="load-test-playlist" class="btn btn-secondary btn-sm fst-italic">
+                click here to load test playlist
+            </a>
+        </div>
+
+        <div class="row mt-3 justify-content-center">
             <div class="col-md-8">
                 <div class="object-fit-contain border rounded ratio ratio-16x9">
                     <div class="youtube-player"></div>
@@ -66,6 +72,17 @@
         let songsPlaylist = []
         let videoIndex = -1;
         let youtubePlayer;
+
+        document.querySelector('#load-test-playlist').addEventListener('click', async e => {
+            try {
+                e.preventDefault();
+
+                const playlist = await(await fetch('/parse_csv_test')).json();
+                generateTable(playlist)
+            } catch (error) {
+                playlistTable.innerHTML = error;
+            }
+        });
 
         uploaForm.addEventListener('input', e => {
             e.preventDefault();
@@ -116,30 +133,37 @@
             callback(video_id);
             resetCurrentPlayingBackground();
         }
+        function generateTable(playlist) {
+            try {
+                songsPlaylist = playlist
+                tableBody = songsPlaylist.map((i, index) => `
+                            <tr data-index="${index}">
+                                <th>${index + 1}</th>
+                                <th>${i.Title}</th>
+                                <th>${i.Artist}</th>
+                            </tr>`
+                ).join('')
+                playlistTable.innerHTML = `
+                <table class="table table-striped table-hover table-bordered rounded">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Artist</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tableBody}</tbody>
+                </table>`
+            } catch (error) {
+                playlistTable.innerHTML = error;
+            }
+        }
         async function parseCsv(file, playlistTable) {
             try {
                 const formData = new FormData();
                 formData.append('file', file);
-                songsPlaylist = await (await fetch('/parse_csv', { method: 'POST', body: formData })).json();
-
-                tableBody = songsPlaylist.map((i, index) => `
-                                <tr data-index="${index}">
-                                    <th>${index + 1}</th>
-                                    <th>${i.Title}</th>
-                                    <th>${i.Artist}</th>
-                                </tr>`
-                ).join('')
-                playlistTable.innerHTML = `
-                    <table class="table table-striped table-hover table-bordered rounded">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Title</th>
-                                <th>Artist</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tableBody}</tbody>
-                    </table>`
+                const playlist = await (await fetch('/parse_csv', { method: 'POST', body: formData })).json();
+                generateTable(playlist)
             } catch (error) {
                 playlistTable.innerHTML = error;
             }
