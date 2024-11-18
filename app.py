@@ -1,12 +1,13 @@
 """Shazam Playlist to Youtube Playlist"""
 
 from pathlib import Path
+import random
 from typing import Optional
 import logging
 import pandas as pd
 from pytube import Search, YouTube
 from flask import Flask, request, send_from_directory
-from sklearn.utils import shuffle as shuffle_fn
+from sklearn.utils import shuffle as sklearn_shuffle
 
 # https://github.com/pytube/pytube/issues/1270#issuecomment-2100372834
 pytube_logger = logging.getLogger('pytube')
@@ -62,7 +63,8 @@ def parse_csv_util(df: pd.DataFrame, shuffle = False):
     try:
         df = df.drop_duplicates(subset=['TrackKey'])[['Title', 'Artist']]
         if shuffle:
-            df = shuffle_fn(df)
+            for random_state in random.sample(range(444, 44444), 3):
+                df = sklearn_shuffle(df, random_state=random_state).reset_index(drop=True)
         return df.to_json(orient="records")
     except Exception as e:
         return str(e)
