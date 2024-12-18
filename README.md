@@ -1,5 +1,5 @@
 ---
-title: Shazam Playlist To Youtube Playlist
+title: Shazam Playlist To Youtube Playlist | ToKnow.ai
 emoji: 🏢
 colorFrom: blue
 colorTo: gray
